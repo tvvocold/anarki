@@ -7,13 +7,13 @@
 
 (declare 'atstrings t)
 
-(= this-site*    "My Forum"
-   site-url*     "http://news.yourdomain.com/"
-   parent-url*   "http://www.yourdomain.com"
-   favicon-url*  ""
-   site-desc*    "What this site is about."               ; for rss feed
-   site-color*   (color 180 180 180)
-   border-color* (color 180 180 180)
+(= this-site*    "Fedora News"
+   site-url*     "http://news.fdzh.org/"
+   parent-url*   "http://www.fdzh.org"
+   favicon-url*  "http://fedoraproject.org/favicon.ico"
+   site-desc*    "about fedora."               ; for rss feed
+   site-color*   (color 0 0 0)
+   border-color* (color 0 0 0)
    prefer-url*   t)
 
 
@@ -31,7 +31,7 @@
   member     nil
   submitted  nil
   votes      nil   ; for now just recent, elts each (time id by sitename dir)
-  karma      1
+  karma      10
   avg        nil
   weight     .5
   ignore     nil
@@ -70,17 +70,17 @@
 
 ; Load and Save
 
-(= newsdir*  "arc/news/"
-   storydir* "arc/news/story/"
-   profdir*  "arc/news/profile/"
-   votedir*  "arc/news/vote/")
+(= newsdir*  (+ srvdir* "news/")
+   storydir* (+ srvdir* "news/story/")
+   profdir*  (+ srvdir* "news/profile/")
+   votedir*  (+ srvdir* "news/vote/"))
 
 (= votes* (table) profs* (table))
 
 (= initload-users* nil)
 
 (def nsv ((o port 8080))
-  (map ensure-dir (list arcdir* newsdir* storydir* votedir* profdir*))
+  (map ensure-dir (list srvdir* newsdir* storydir* votedir* profdir*))
   (unless stories* (load-items))
   (if (and initload-users* (empty profs*)) (load-users))
   (asv port))
@@ -381,7 +381,7 @@
 
 ; Page Layout
 
-(= up-url* "grayarrow.gif" down-url* "graydown.gif" logo-url* "arc.png")
+(= up-url* "grayarrow.png" down-url* "graydown.gif" logo-url* "arc.png")
 
 (defopr favicon.ico req favicon-url*)
 
@@ -397,10 +397,13 @@
        (tag script (pr votejs*))
        (tag title (pr ,title)))
      (tag body
+
        (center
          (tag (table border 0 cellpadding 0 cellspacing 0 width "85%"
                      bgcolor sand)
-           ,@body)))))
+           ,@body)
+(prn "<a href='http://star.fdzh.org/p/401/'>FAQ</a>  All rights belong to GOD")
+        ))))
 
 (= pagefns* nil)
 
@@ -463,39 +466,39 @@
 
 (defop news.css req
   (pr "
-body  { font-family:Verdana; font-size:10pt; color:#828282; }
-td    { font-family:Verdana; font-size:10pt; color:#828282; }
+* {margin:0;padding:0;}
+body  { font-family:'Helvetica Neue',Verdana; font-size:12pt; color:#008000; background: #000;}
+td    { font-family:'Helvetica Neue',Verdana; font-size:12pt; color:#008000; padding-left:8px;}
 
-.admin td   { font-family:Verdana; font-size:8.5pt; color:#000000; }
-.subtext td { font-family:Verdana; font-size:  7pt; color:#828282; }
+.admin td   { font-family:Verdana; font-size:8.5pt; color:#008000; }
+.subtext td { font-family:Verdana; font-size:  7pt; color:#008000; }
 
-input    { font-family:Courier; font-size:10pt; color:#000000; }
+input    { font-family:Courier; font-size:12pt; color:#008000; }
 input[type=\"submit\"] { font-family:Verdana; }
-textarea { font-family:Courier; font-size:10pt; color:#000000; }
+textarea { font-family:Courier; font-size:12pt; color:#008000; }
 
-a:link    { color:#000000; text-decoration:none; }
-a:visited { color:#828282; text-decoration:none; }
+a:link    { color:#7FBE5F; text-decoration:none; }
+a:visited { color:#008050; text-decoration:none; }
 
-.default { font-family:Verdana; font-size: 10pt; color:#828282; }
-.admin   { font-family:Verdana; font-size:8.5pt; color:#000000; }
-.title   { font-family:Verdana; font-size: 10pt; color:#828282; }
-.adtitle { font-family:Verdana; font-size:  9pt; color:#828282; }
-.subtext { font-family:Verdana; font-size:  7pt; color:#828282; }
-.yclinks { font-family:Verdana; font-size:  8pt; color:#828282; }
-.pagetop { font-family:Verdana; font-size: 10pt; color:#222222; }
-.comhead { font-family:Verdana; font-size:  8pt; color:#828282; }
-.comment { font-family:Verdana; font-size:  9pt; }
+.default { font-family:Verdana; font-size: 10pt; color:#008000; }
+.admin   { font-family:Verdana; font-size:  9pt; color:#008000; }
+.title   { font-family:Verdana; font-size: 12pt; color:#008000; }
+.adtitle { font-family:Verdana; font-size:  9pt; color:#008000; }
+.subtext { font-family:Verdana; font-size:  7pt; color:#008000; }
+.yclinks { font-family:Verdana; font-size:  8pt; color:#008000; }
+.pagetop { font-family:Verdana; font-size: 11pt; color:#C5BF50; }
+.comhead { font-family:Verdana; font-size:  8pt; color:#008000; }
+.comment { font-family:Verdana; font-size:  9pt; color:#C5BF50; }
 .dead    { font-family:Verdana; font-size:  9pt; color:#dddddd; }
 
-.comment a:link, .comment a:visited { text-decoration:underline;}
 .dead a:link, .dead a:visited { color:#dddddd; }
-.pagetop a:visited { color:#000000;}
+.pagetop a:visited { color:#008000;}
 .topsel a:link, .topsel a:visited { color:#ffffff; }
 
-.subtext a:link, .subtext a:visited { color:#828282; }
+.subtext a:link, .subtext a:visited { color:#008000; }
 .subtext a:hover { text-decoration:underline; }
 
-.comhead a:link, .subtext a:visited { color:#828282; }
+.comhead a:link, .subtext a:visited { color:#008000; }
 .comhead a:hover { text-decoration:underline; }
 
 .default p { margin-top: 8px; margin-bottom: 0px; }
@@ -518,7 +521,7 @@ pre:hover {overflow:auto}
 ; have different space at the bottom.  This solution suggested by Devin.
 ; Really am using p tags wrong (as separators rather than wrappers) and the
 ; correct thing to do would be to wrap each para in <p></p>.  Then whatever
-; I set the bottom spacing to, it would be the same no matter how many paras
+; I set the bottom spacing to, it would be the same? no matter how many paras
 ; in a comment. In this case by setting the bottom spacing of p to 0, I'm
 ; making it the same as no p, which is what the first para has.
 
@@ -552,12 +555,15 @@ function vote(node) {
   ping.src = node.href;
 
   return false; // cancel browser nav
-} ")
+}
+
+
+")
 
 
 ; Page top
 
-(= sand (color 246 246 239) textgray (gray 130))
+(= sand (color 0 0 0) textgray (gray 130))
 
 (def main-color (user)
   (aif (and user (uvar user topcolor))
@@ -571,7 +577,7 @@ function vote(node) {
                     style "padding:2px")
           (tr (gen-logo)
               (when (is switch 'full)
-                (tag (td style "line-height:12pt; height:10px;")
+                (tag (td style "line-height:20pt; height:30px;")
                   (spanclass pagetop
                     (tag b (link this-site* "news"))
                     (hspace 10)
@@ -579,7 +585,7 @@ function vote(node) {
              (if (is switch 'full)
                (tag (td style "text-align:right;padding-right:4px;")
                  (spanclass pagetop (topright user whence)))
-               (tag (td style "line-height:12pt; height:10px;")
+               (tag (td style "line-height:20pt; height:30px;")
                  (spanclass pagetop (prbold label))))))))
   (map [_ user] pagefns*)
   (spacerow 10))
@@ -590,7 +596,7 @@ function vote(node) {
       (tag (img src logo-url* width 18 height 18
                 style "border:1px #@(hexrep border-color*) solid;")))))
 
-(= toplabels* '(nil "welcome" "new" "threads" "comments" "leaders" "*"))
+(= toplabels* '(nil "welcome" "new" "ask" "threads" "comments" "official" "leaders" "*"))
 
 (= welcome-url* "welcome")
 
@@ -599,9 +605,11 @@ function vote(node) {
     (when (noob user)
       (toplink "welcome" welcome-url* label))
     (toplink "new" "newest" label)
+    (toplink "ask" "ask" label)
     (when user
       (toplink "threads" (threads-url user) label))
     (toplink "comments" "newcomments" label)
+    (toplink "official" "official" label)
     (toplink "leaders"  "leaders"     label)
     (hook 'toprow user label)
     (link "submit")
@@ -622,7 +630,7 @@ function vote(node) {
       (when-umatch/r user req
         (logout-user user)
         whence))
-    (onlink "login"
+    (onlink "join"
       (login-page nil
                   (list (fn (u ip)
                           (ensure-news-user u)
@@ -804,7 +812,7 @@ function vote(node) {
   (tostring (underlink "reset password" "resetpw")))
 
 (newsop welcome ()
-  (pr "Welcome to " this-site* ", " user "!"))
+  (pr "Welcome to " this-site* ", " user ",HAVE FUN! __________ FREEDOM. FRIENDS. FEATURES. FIRST."))
 
 
 ; Main Operators
@@ -843,6 +851,18 @@ function vote(node) {
 
 
 (newsop newest () (newestpage user))
+
+(newsop official ()
+  (listpage user (msec) (keep showpage-filter ranked-stories*) "official" nil))
+
+(def showpage-filter (s)
+  (and (astory s) (begins (downcase s!title) "official:")))
+
+(newsop ask ()
+  (listpage user (msec) (keep askpage-filter ranked-stories*) "ask" nil))
+
+(def askpage-filter (s)
+  (and (astory s) (blank s!url) (begins (downcase s!title) "ask:")))
 
 ; Note: dead/deleted items will persist for the remaining life of the
 ; cached page.  If this were a prob, could make deletion clear caches.
@@ -988,7 +1008,7 @@ function vote(node) {
           (pdflink url)
           (awhen (sitename url)
             (spanclass comhead
-              (pr " (" )
+              (pr " " )
               (if (admin user)
                 (w/rlink (do (set-site-ban user
                                            it
@@ -1003,7 +1023,7 @@ function vote(node) {
                                               kill   darkblue))
                       (pr it))))
                 (pr it))
-              (pr ") "))))
+              (pr " "))))
       (pr (pseudo-text s)))))
 
 (def titlelink (s url user)
@@ -1013,7 +1033,8 @@ function vote(node) {
                      (or (live s) (author user s) (editor user))
                       url)
             rel  (unless (or toself (> (realscore s) follow-threshold*))
-                   'nofollow))
+                    'nofollow)
+                  target '_blank)
       (pr s!title))))
 
 (def pdflink (url)
@@ -1457,8 +1478,8 @@ function vote(node) {
     (submit-page user u t)
     (submit-login-warning u t)))
 
-(= title-limit* 80
-   retry*       "Please try again."
+(= title-limit* 100
+   retry*       "Please try again.url must add http://"
    toolong*     "Please make title < @title-limit* characters."
    bothblank*   "The url and text fields can't both be blank.  Please
                  either supply a url, or if you're asking a question,
@@ -1756,7 +1777,7 @@ function vote(node) {
                                  (pr (if (~blank o!title) o!title o!text)))
                                (if (and (~blank o!title) (~blank o!url))
                                    (link o!title o!url)
-                                   (fontcolor black (pr o!text)))))))
+                                   (fontcolor green (pr o!text)))))))
   (tr (if n (td))
       (td)
       (tag (td class 'default)
@@ -2139,7 +2160,7 @@ function vote(node) {
     (if (only.comments-active i)
       (if user
           (addcomment-page i user whence)
-          (login-page "You have to be logged in to comment."
+          (login-page "You have to be logged in to comment.请先注册一下吧。"
                       (fn (u ip)
                         (ensure-news-user u)
                         (newslog ip u 'comment-login)
@@ -2608,5 +2629,4 @@ first asterisk isn't whitespace.
     (tab
       (each c (dedup (map downcase (trues [uvar _ topcolor] (users))))
         (tr (td c) (tdcolor (hex>color c) (hspace 30)))))))
-
 
