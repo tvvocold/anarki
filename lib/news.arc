@@ -1,10 +1,4 @@
-; News.  2 Sep 06.
-
-; to run news: (nsv), then go to http://localhost:8080
-; put usernames of admins, separated by whitespace, in arc/admins
-
-; bug: somehow (+ votedir* nil) is getting evaluated.
-
+; things to customize
 (declare 'atstrings t)
 
 (= this-site*    "My Forum"
@@ -16,6 +10,14 @@
    border-color* (color 180 180 180)
    prefer-url*   t)
 
+; these settings might improve performance when you need it
+
+;(= static-max-age* 7200)    ; browsers can cache static files for 7200 sec
+
+;(declare 'direct-calls t)   ; you promise not to redefine fns as tables
+
+;(declare 'explicit-flush t) ; you take responsibility for flushing output
+                            ; (all existing news code already does)
 
 ; Structures
 
@@ -70,17 +72,17 @@
 
 ; Load and Save
 
-(= newsdir*  "arc/news/"
-   storydir* "arc/news/story/"
-   profdir*  "arc/news/profile/"
-   votedir*  "arc/news/vote/")
+(= newsdir*  (+ srvdir* "news/")
+   storydir* (+ srvdir* "news/story/")
+   profdir*  (+ srvdir* "news/profile/")
+   votedir*  (+ srvdir* "news/vote/"))
 
 (= votes* (table) profs* (table))
 
 (= initload-users* nil)
 
 (def nsv ((o port 8080))
-  (map ensure-dir (list arcdir* newsdir* storydir* votedir* profdir*))
+  (map ensure-dir (list srvdir* newsdir* storydir* votedir* profdir*))
   (unless stories* (load-items))
   (if (and initload-users* (empty profs*)) (load-users))
   (asv port))
@@ -590,7 +592,7 @@ function vote(node) {
       (tag (img src logo-url* width 18 height 18
                 style "border:1px #@(hexrep border-color*) solid;")))))
 
-(= toplabels* '(nil "welcome" "new" "threads" "comments" "leaders" "*"))
+(= toplabels* '(nil "welcome" "new" "threads" "comments" "leaders" "show" "ask" "*"))
 
 (= welcome-url* "welcome")
 
@@ -603,6 +605,8 @@ function vote(node) {
       (toplink "threads" (threads-url user) label))
     (toplink "comments" "newcomments" label)
     (toplink "leaders"  "leaders"     label)
+    (toplink "show" "show" label)
+    (toplink "ask" "ask" label)
     (hook 'toprow user label)
     (link "submit")
     (unless (mem label toplabels*)
@@ -843,6 +847,18 @@ function vote(node) {
 
 
 (newsop newest () (newestpage user))
+
+(newsop show ()
+  (listpage user (msec) (keep showpage-filter ranked-stories*) "show" nil))
+
+(def showpage-filter (s)
+  (and (astory s) (begins (downcase s!title) "show")))
+
+(newsop ask ()
+  (listpage user (msec) (keep askpage-filter ranked-stories*) "ask" nil))
+
+(def askpage-filter (s)
+  (and (astory s) (blank s!url)))
 
 ; Note: dead/deleted items will persist for the remaining life of the
 ; cached page.  If this were a prob, could make deletion clear caches.
@@ -2608,5 +2624,3 @@ first asterisk isn't whitespace.
     (tab
       (each c (dedup (map downcase (trues [uvar _ topcolor] (users))))
         (tr (td c) (tdcolor (hex>color c) (hspace 30)))))))
-
-
